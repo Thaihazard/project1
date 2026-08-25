@@ -45,9 +45,10 @@ class SalaryCleaner(BaseEstimator, TransformerMixin):
         }
         X_['Education Level'] = X_['Education Level'].replace(mapping)
         
-        # Drop duplicates & missing
-        X_ = X_.drop_duplicates()
-        X_ = X_.dropna()
+        # Drop duplicates & missing only if Salary is present in columns
+        if 'Salary' in X_.columns:
+            X_ = X_.drop_duplicates()
+            X_ = X_.dropna()
         
         # Group rare job titles
         if 'Job Title' in X_.columns:
