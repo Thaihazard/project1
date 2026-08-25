@@ -1,0 +1,12 @@
+scikit-learn==1.9.0
+xgboost==3.4.1
+catboost==1.2.10
+optuna==4.9.0
+shap==0.52.0
+joblib==1.5.3
+pandas==2.3.3
+numpy==2.3.4
+scipy==1.18.1
+matplotlib==3.11.1
+seaborn==0.13.2
+pytest==9.1.1
