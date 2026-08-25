@@ -1,7 +1,7 @@
 import pandas as pd
 import numpy as np
 from sklearn.base import BaseEstimator, TransformerMixin
-from sklearn.compose import ColumnTransformer
+from sklearn.compose import ColumnTransformer, TransformedTargetRegressor
 from sklearn.preprocessing import StandardScaler, OneHotEncoder
 from sklearn.pipeline import Pipeline
 
@@ -32,11 +32,8 @@ class SalaryCleaner(BaseEstimator, TransformerMixin):
 
     def transform(self, X):
         X_ = X.copy()
-        # Drop duplicates & missing
-        X_ = X_.drop_duplicates()
-        X_ = X_.dropna()
         
-        # Standardize Education Level
+        # Standardize Education Level first
         X_['Education Level'] = X_['Education Level'].str.strip().str.title()
         mapping = {
             "Bachelor'S": "Bachelor's",
@@ -47,6 +44,10 @@ class SalaryCleaner(BaseEstimator, TransformerMixin):
             "Ph.D.": "PhD"
         }
         X_['Education Level'] = X_['Education Level'].replace(mapping)
+        
+        # Drop duplicates & missing
+        X_ = X_.drop_duplicates()
+        X_ = X_.dropna()
         
         # Group rare job titles
         if 'Job Title' in X_.columns:
@@ -76,6 +77,34 @@ def build_preprocessor(numeric_features=['Age', 'Years of Experience'], categori
         ]
     )
     return preprocessor
+
+class SalaryPipelineFactory:
+    @staticmethod
+    def create_pipeline(regressor, rare_threshold=20):
+        preprocessor = ColumnTransformer(
+            transformers=[
+                ('num', StandardScaler(), ['Age', 'Years of Experience']),
+                ('cat', OneHotEncoder(handle_unknown='ignore', sparse_output=False), ['Gender', 'Education Level', 'Job Title'])
+            ]
+        )
+        
+        model_pipeline = Pipeline([
+            ('preprocessor', preprocessor),
+            ('regressor', regressor)
+        ])
+        
+        # Wrap with TransformedTargetRegressor for automatic log1p/expm1
+        transformed_model = TransformedTargetRegressor(
+            regressor=model_pipeline,
+            func=np.log1p,
+            inverse_func=np.expm1
+        )
+        
+        full_pipeline = Pipeline([
+            ('cleaner', SalaryCleaner(rare_threshold=rare_threshold)),
+            ('model', transformed_model)
+        ])
+        return full_pipeline
 
 if __name__ == "__main__":
     X, y = load_and_clean_data()

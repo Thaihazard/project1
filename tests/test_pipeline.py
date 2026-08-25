@@ -43,7 +43,7 @@ def test_model_inference():
     pred_log = pipe.predict(sample)
     pred_salary = np.expm1(pred_log[0])
     
-    assert isinstance(pred_salary, float)
+    assert isinstance(pred_salary, (float, np.floating))
     assert pred_salary > 0
     print(f"Sample prediction test passed: ${pred_salary:,.2f}")
 
