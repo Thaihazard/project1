@@ -9,11 +9,24 @@ from sklearn.metrics import mean_absolute_error, mean_squared_error, r2_score
 from preprocessing import SalaryCleaner, SalaryPipelineFactory
 
 class SalaryModelTrainer:
-    def __init__(self, data_path="archive/Salary_Data.csv", model_output_path="model_registry/best_salary_model.pkl"):
+    """Trainer class for training and saving the salary prediction model."""
+
+    def __init__(self, data_path: str = "archive/Salary_Data.csv", model_output_path: str = "model_registry/best_salary_model.pkl") -> None:
+        """Initialize the SalaryModelTrainer.
+
+        Args:
+            data_path: Path to the CSV dataset.
+            model_output_path: Path where the trained model artifact will be saved.
+        """
         self.data_path = data_path
         self.model_output_path = model_output_path
 
-    def train(self):
+    def train(self) -> dict:
+        """Train the Random Forest regressor pipeline, evaluate metrics, and save the model.
+
+        Returns:
+            Dictionary containing evaluation metrics (MAE, RMSE, R2).
+        """
         df = pd.read_csv(self.data_path)
         
         # Clean raw dataset (drop duplicates and missing values) before split
