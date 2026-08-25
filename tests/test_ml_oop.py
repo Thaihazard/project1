@@ -4,6 +4,7 @@ import os
 from sklearn.linear_model import LinearRegression
 from preprocessing import SalaryCleaner, SalaryPipelineFactory
 from train_final_model import SalaryModelTrainer
+from predict_salary import SalaryPredictor
 
 def test_salary_cleaner():
     df = pd.DataFrame({
@@ -30,3 +31,17 @@ def test_salary_model_trainer(tmp_path):
     assert os.path.exists(model_path)
     assert 'MAE' in metrics
     assert 'R2' in metrics
+
+def test_salary_predictor():
+    predictor = SalaryPredictor(model_path="model_registry/best_salary_model.pkl")
+    sample = {
+        'Age': 28,
+        'Gender': 'Female',
+        'Education Level': "Bachelor's",
+        'Job Title': 'Software Engineer',
+        'Years of Experience': 3.0
+    }
+    pred = predictor.predict_single(sample)
+    assert isinstance(pred, float)
+    assert pred > 0
+
