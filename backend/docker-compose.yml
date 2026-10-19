@@ -1,0 +1,71 @@
+services:
+  api:
+    build: .
+    ports:
+      - "8001:8000"
+    environment:
+      APP_ENV: development
+      DATABASE_URL: postgresql+asyncpg://comphub:comphub@postgres:5432/comphub
+      JWT_SECRET: ${JWT_SECRET:-local-compose-change-before-deployment}
+      REDIS_URL: redis://redis:6379/0
+      MODEL_PATH: /ml_engine/artifacts/xgboost_salary_v1.pkl
+      SHAP_EXPLAINER_PATH: /ml_engine/artifacts/shap_explainer_v1.pkl
+      SCALER_PIPELINE_PATH: /ml_engine/artifacts/scaler_pipeline_v1.pkl
+      CORS_ORIGINS: '["http://localhost:5173","http://127.0.0.1:5173"]'
+      FIREBASE_PROJECT_ID: ${FIREBASE_PROJECT_ID}
+      FIREBASE_SERVICE_ACCOUNT_PATH: /run/secrets/firebase-service-account.json
+      FIREBASE_AUTH_EMAIL_MAP: ${FIREBASE_AUTH_EMAIL_MAP}
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_started
+    restart: unless-stopped
+    volumes:
+      - ../ml_engine/artifacts:/ml_engine/artifacts:ro
+      - type: bind
+        source: ${FIREBASE_SERVICE_ACCOUNT_PATH}
+        target: /run/secrets/firebase-service-account.json
+        read_only: true
+  worker:
+    build: .
+    command: ["celery", "-A", "app.core.celery_app.celery_app", "worker", "--loglevel=info"]
+    environment:
+      DATABASE_URL: postgresql+asyncpg://comphub:comphub@postgres:5432/comphub
+      JWT_SECRET: ${JWT_SECRET:-local-compose-change-before-deployment}
+      REDIS_URL: redis://redis:6379/0
+      MODEL_PATH: /ml_engine/artifacts/xgboost_salary_v1.pkl
+      SHAP_EXPLAINER_PATH: /ml_engine/artifacts/shap_explainer_v1.pkl
+      SCALER_PIPELINE_PATH: /ml_engine/artifacts/scaler_pipeline_v1.pkl
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_started
+    volumes:
+      - ../ml_engine/artifacts:/ml_engine/artifacts:ro
+  postgres:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_DB: comphub
+      POSTGRES_USER: comphub
+      POSTGRES_PASSWORD: comphub
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U comphub -d comphub"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+  redis:
+    image: redis:7-alpine
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+
+volumes:
+  postgres_data:
+  redis_data:

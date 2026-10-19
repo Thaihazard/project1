@@ -1,0 +1,10 @@
+artifacts/*.pkl
+artifacts/*.joblib
+artifacts/quality_report.json
+data/raw/*
+!data/raw/.gitkeep
+data/processed/*
+!data/processed/.gitkeep
+__pycache__/
+*.py[cod]
+.venv/

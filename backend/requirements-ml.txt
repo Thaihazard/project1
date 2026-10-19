@@ -1,0 +1,10 @@
+# Install from the repository root to enable trained-model inference and SHAP explanations.
+joblib>=1.4,<2.0
+numpy>=1.26,<3.0
+pandas>=2.2,<3.0
+scikit-learn>=1.4,<2.0
+xgboost>=2.0,<4.0
+shap>=0.44,<1.0
+optuna>=3.6,<5.0
+psycopg[binary]>=3.1,<4.0
+PyYAML>=6.0,<7.0

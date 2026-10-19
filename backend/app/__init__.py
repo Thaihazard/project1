@@ -1,0 +1,1 @@
+"""AI Compensation Hub backend."""

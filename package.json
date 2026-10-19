@@ -1,0 +1,21 @@
+{
+  "name": "ai-comp-hub",
+  "version": "1.0.0",
+  "description": "AI Salary Prediction & HR Platform Frontend",
+  "main": "index.html",
+  "scripts": {
+    "dev": "npx http-server ."
+  },
+  "keywords": [
+    "ai",
+    "hr",
+    "salary-prediction",
+    "tailwind",
+    "alpinejs"
+  ],
+  "author": "AI Expert",
+  "license": "MIT",
+  "dependencies": {
+    "http-server": "^14.1.1"
+  }
+}

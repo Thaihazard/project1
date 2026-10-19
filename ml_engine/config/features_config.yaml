@@ -1,0 +1,30 @@
+target: target_salary
+
+# Inputs match AIPredictInput in backend/app/schemas/ai.py.
+input_features:
+  - current_salary
+  - kpi_score
+  - soft_skill_score
+  - years_experience
+  - certification_count
+
+engineered_features:
+  - kpi_skill_interaction
+  - experience_adjusted_kpi
+
+numeric_features:
+  - current_salary
+  - kpi_score
+  - soft_skill_score
+  - years_experience
+  - certification_count
+  - kpi_skill_interaction
+  - experience_adjusted_kpi
+
+categorical_features: []
+
+# Features absent from the current employee table are filled only for DB extracts;
+# replace these defaults after HR data includes verified experience/certification data.
+database_defaults:
+  years_experience: 0
+  certification_count: 0

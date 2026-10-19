@@ -1,0 +1,10 @@
+{
+  "name": "ai-comp-hub-fastapi",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Python FastAPI backend; dependencies are managed by requirements.txt.",
+  "scripts": {
+    "start": "python -m uvicorn app.main:app --app-dir .",
+    "dev": "python -m uvicorn app.main:app --reload --app-dir ."
+  }
+}

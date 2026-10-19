@@ -1,0 +1,1 @@
+Place versioned, reviewed salary model and SHAP explainer artifacts here (or configure `MODEL_PATH`). No trained model is currently included. The service returns a clearly labeled demo baseline until a model artifact is installed.
