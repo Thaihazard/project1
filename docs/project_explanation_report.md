@@ -214,9 +214,3 @@ Script điều phối toàn bộ chu trình huấn luyện thông qua tệp cấ
    ```
 
 ---
-
-## ❓ Câu Hỏi Làm Rõ (Clarification Questions)
-
-Để tiếp tục tối ưu hóa hệ thống này theo yêu cầu cụ thể của bạn, xin vui lòng cho biết:
-1. Bạn có muốn tích hợp thêm một **Web UI đơn giản (Streamlit / FastAPI)** để người dùng nhập thông tin nhân sự và nhận kết quả dự đoán trực quan qua giao diện không?
-2. Bạn có muốn bổ sung thêm các biểu đồ trực quan hóa SHAP (`shap.summary_plot`) tự động lưu thành file ảnh vào thư mục `docs/` không?
