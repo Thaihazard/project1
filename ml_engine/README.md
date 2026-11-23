@@ -12,6 +12,24 @@ This folder contains the reproducible salary-model training pipeline and version
 - `tests/`: model quality gate checks.
 - `train_pipeline.py`: training entrypoint.
 
+## Quickstart: Generate Sample Data & Benchmark
+
+To quickly test the end-to-end ML workflow without existing HR database records:
+
+```powershell
+# 1. Generate realistic synthetic payroll data
+python ml_engine/generate_sample_data.py
+
+# 2. Run model bake-off benchmark (Ridge, Random Forest, XGBoost)
+python ml_engine/benchmark_models.py
+
+# 3. Train the production XGBoost model with quality gates
+python ml_engine/train_pipeline.py --data ml_engine/data/raw/payroll_training.csv --enforce-quality
+
+# 4. Verify model loading and SHAP explanation in backend
+python test_ai_connection.py
+```
+
 ## Train from a CSV extract
 
 CSV files must include `current_salary`, `kpi_score`, `soft_skill_score`, `years_experience`, `certification_count`, and `target_salary`. Use an approved, de-identified extract; do not include employee names or IDs.
