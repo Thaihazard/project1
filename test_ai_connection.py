@@ -1,10 +1,14 @@
 import sys
 from pathlib import Path
 
-# Setup paths
+# Setup paths (support both running on host and inside /app container)
 PROJECT_ROOT = Path(__file__).resolve().parent
 BACKEND_DIR = PROJECT_ROOT / "backend"
-sys.path.insert(0, str(BACKEND_DIR))
+if BACKEND_DIR.is_dir():
+    sys.path.insert(0, str(BACKEND_DIR))
+sys.path.insert(0, str(PROJECT_ROOT))
+if Path("/app").is_dir():
+    sys.path.insert(0, "/app")
 
 from app.schemas.ai import AIPredictInput
 from app.services.ai_engine import SalaryPredictionService

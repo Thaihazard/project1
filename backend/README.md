@@ -4,12 +4,18 @@ FastAPI backend with versioned endpoints, async SQLAlchemy persistence, JWT/RBAC
 
 ## Run locally
 
-From the repository root, install backend dependencies and start the API:
+From the repository root, install backend and ML inference dependencies, then start the API:
 
-```powershell
+```bash
+# 1. Install dependencies
 python -m pip install -r backend/requirements.txt
+python -m pip install -r backend/requirements-ml.txt
+
+# 2. Run API server
 python -m uvicorn app.main:app --reload --app-dir backend --port 8001
 ```
+
+> **Note on Linux/Ubuntu**: XGBoost requires `libgomp1`. Run `sudo apt-get install -y libgomp1`.
 
 The API and Swagger UI are available at `http://127.0.0.1:8001` and `http://127.0.0.1:8001/docs`. The default development database is SQLite at `backend/data/comp_hub.db`. On first startup, the API seeds a sample Q3 2026 payroll period and demo accounts. The Vite dev server proxies `/api` to `http://127.0.0.1:8001`.
 
@@ -31,7 +37,13 @@ Demo logins: `hr` / `AdminDemo123!`, `manager` / `ManagerDemo123!`, `employee` /
 - `POST /api/v1/ai-salary/predict`, `/simulate`, `/budget-simulation`
 - Attendance check-in and leave requests are persisted in the development database. Leave approvals are restricted to HR or the employee's assigned manager.
 
-`docker compose -f backend/docker-compose.yml up --build` starts the API, PostgreSQL, Redis, and Celery worker. Before production, run `python -m alembic upgrade head` from the backend directory, then create an initial HR user with `python -m scripts.create_user --username your-admin --role hr` from that directory. The local SQLite/demo mode is intended for development. No trained model artifacts are checked in; until approved artifacts are placed in `ml_engine/artifacts`, the prediction endpoint reports `baseline-demo-v1` and explicitly identifies its output as illustrative, not SHAP. Follow `ml_engine/README.md` to train and evaluate a model. Install `backend/requirements-ml.txt` from the repository root and provide the model, fitted preprocessing pipeline, and SHAP artifacts to enable XGBoost/SHAP inference.
+## Docker deployment
+
+Run `docker compose up -d --build` from the repository root to start the full stack (PostgreSQL, Redis, Celery worker, FastAPI backend, and React/Vite frontend).
+
+Alternatively, `docker compose -f backend/docker-compose.yml up --build` starts only the backend services.
+
+When starting a fresh database, migrations apply automatically on startup (`alembic upgrade head`). No trained model artifacts are checked in by default; follow `ml_engine/README.md` to train and evaluate a model. Once trained artifacts are placed in `ml_engine/artifacts/`, the prediction endpoint automatically activates `xgboost_salary_v1` and SHAP explanations. Without artifacts, it safely reports `baseline-demo-v1`.
 # Firebase Authentication with Google
 
 1. Create a Firebase project and register a Web app. In Firebase Console, enable **Authentication → Sign-in method → Google** and add `localhost` to Authorized domains.
