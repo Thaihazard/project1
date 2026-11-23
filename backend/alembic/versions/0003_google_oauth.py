@@ -10,10 +10,22 @@ depends_on = None
 
 
 def upgrade() -> None:
-    op.add_column("users", sa.Column("email", sa.String(length=255), nullable=True))
-    op.add_column("users", sa.Column("google_sub", sa.String(length=255), nullable=True))
-    op.create_index("ix_users_email", "users", ["email"], unique=True)
-    op.create_index("ix_users_google_sub", "users", ["google_sub"], unique=True)
+    bind = op.get_bind()
+    insp = sa.inspect(bind)
+    cols = {c["name"] for c in insp.get_columns("users")}
+    indexes = {i["name"] for i in insp.get_indexes("users")}
+
+    if "email" not in cols:
+        op.add_column("users", sa.Column("email", sa.String(length=255), nullable=True))
+    if "google_sub" not in cols and "firebase_uid" not in cols:
+        op.add_column("users", sa.Column("google_sub", sa.String(length=255), nullable=True))
+
+    # Re-check columns after potential add
+    cols = {c["name"] for c in insp.get_columns("users")}
+    if "ix_users_email" not in indexes and "email" in cols:
+        op.create_index("ix_users_email", "users", ["email"], unique=True)
+    if "ix_users_google_sub" not in indexes and "google_sub" in cols:
+        op.create_index("ix_users_google_sub", "users", ["google_sub"], unique=True)
 
 
 def downgrade() -> None:

@@ -11,10 +11,14 @@ depends_on = None
 
 
 def upgrade() -> None:
-    op.add_column(
-        "employees",
-        sa.Column("is_active", sa.Boolean(), server_default=sa.true(), nullable=False),
-    )
+    bind = op.get_bind()
+    insp = sa.inspect(bind)
+    cols = {c["name"] for c in insp.get_columns("employees")}
+    if "is_active" not in cols:
+        op.add_column(
+            "employees",
+            sa.Column("is_active", sa.Boolean(), server_default=sa.true(), nullable=False),
+        )
 
 
 def downgrade() -> None:
