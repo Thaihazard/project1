@@ -3,10 +3,16 @@ from __future__ import annotations
 import argparse
 import json
 import os
+import sys
 from pathlib import Path
 
 import joblib
 import yaml
+
+# Ensure project root is in sys.path when running script directly
+ROOT = Path(__file__).resolve().parent
+if str(ROOT.parent) not in sys.path:
+    sys.path.insert(0, str(ROOT.parent))
 
 from ml_engine.src.data_loader import ROOT, load_csv, load_postgres, validate_training_data
 from ml_engine.src.explainer import build_explainer
